@@ -56,7 +56,7 @@ export function Hero() {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent z-10" />
               <Image
-                src="/images/dp.jpg"
+                src="\images\dp.jpeg"
                 alt="Ehtisham Yaqoob"
                 fill
                 className="object-cover"
