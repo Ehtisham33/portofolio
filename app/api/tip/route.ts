@@ -5,34 +5,32 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
-const TIP_PROMPT = `Generate a short, practical code snippet tip with a title and code.
+const TIP_PROMPT = `
+You are generating short coding tips for Ehtisham Yaqoob’s portfolio website.
 
-Return the response in this exact JSON format:
+The tips must reflect Ehtisham’s real-world work as a Python Full Stack & AI Developer.
+
+STRICT RULES:
+- Prefer Python, Django, FastAPI, backend patterns
+- AI-related tips are allowed only at a high level
+- Avoid frontend-only or generic snippets
+- No risky automation (YouTube, scraping, bots)
+- Code must feel production-oriented
+
+Return JSON ONLY in this format:
 {
-  "title": "Brief title (max 50 chars) describing what the code does",
-  "code": "The actual code snippet (2-3 lines max)"
+  "title": "Very short title (max 40 chars)",
+  "code": "2–3 lines of clean, practical code"
 }
 
-The code should be related to one of these technologies:
-- CSS/Tailwind CSS: utility classes, responsive design, animations
-- JavaScript/TypeScript: ES6+ features, async/await, type safety, array methods
-- Python: list comprehensions, decorators, context managers
-- Database (MongoDB/PostgreSQL): queries, aggregations, indexes
-- AWS: CLI commands, S3, Lambda, EC2
-- Docker: Dockerfile commands, docker-compose, container management
-- React/Next.js: hooks, server components, optimization
-- Node.js: Express routes, middleware, error handling
-
-Requirements:
-- Title: Very short (max 50 characters), describes what the code does
-- Code: 2-3 lines maximum, practical and immediately usable
-- Use proper syntax for the language
-
-Example response:
-{
-  "title": "TypeScript: Safe async fetch",
-  "code": "const { data, error } = await fetch(url)\\n  .then(r => r.json())\\n  .catch(e => ({ error: e }));"
-}`;
+Allowed domains:
+- Python backend utilities
+- Django / FastAPI patterns
+- API validation
+- Background tasks
+- Database queries
+- Clean architecture helpers
+`;
 
 export async function GET(request: NextRequest) {
   try {
@@ -54,7 +52,7 @@ export async function GET(request: NextRequest) {
         { role: 'system', content: TIP_PROMPT },
         { role: 'user', content: 'Generate a new code snippet tip.' },
       ],
-      temperature: 0.9, // Higher temperature for more variety
+      temperature: 0.6, // Higher temperature for more variety
       max_tokens: 200,
     });
 
@@ -62,16 +60,21 @@ export async function GET(request: NextRequest) {
 
     if (!response) {
       // Fallback tips if AI fails
-      const fallbackTips = [
-        { title: 'TypeScript: Safe async fetch', code: 'const { data, error } = await fetch(url)\n  .then(r => r.json())\n  .catch(e => ({ error: e }));' },
-        { title: 'Tailwind: Flexbox utilities', code: 'className="flex items-center\n  justify-between gap-2"' },
-        { title: 'JavaScript: Remove duplicates', code: 'const unique = [...new Set(array)];' },
-        { title: 'Python: List comprehension', code: 'data = [x*2 for x in range(10)]' },
-        { title: 'Docker: Lightweight base image', code: 'FROM node:18-alpine\nWORKDIR /app' },
-        { title: 'MongoDB: Query filter', code: 'db.collection.find(\n  { status: "active" }\n)' },
-        { title: 'React: State hook', code: 'const [state, setState] =\n  useState(initial);' },
+      const FALLBACK_TIPS = [
+        {
+          title: "Python: Dict default value",
+          code: "value = data.get('key', default)"
+        },
+        {
+          title: "FastAPI: Query validation",
+          code: "q: str = Query(..., min_length=3)"
+        },
+        {
+          title: "Django: Atomic transaction",
+          code: "with transaction.atomic():\n  save_data()"
+        }
       ];
-      const fallback = fallbackTips[Math.floor(Math.random() * fallbackTips.length)];
+      const fallback = FALLBACK_TIPS[Math.floor(Math.random() * FALLBACK_TIPS.length)];
       return NextResponse.json({
         title: fallback.title,
         code: fallback.code,
@@ -96,12 +99,21 @@ export async function GET(request: NextRequest) {
     }
 
     // Fallback: if JSON parsing fails, return a default structure
-    const fallbackTips = [
-      { title: 'TypeScript: Safe async fetch', code: 'const { data, error } = await fetch(url)\n  .then(r => r.json())\n  .catch(e => ({ error: e }));' },
-      { title: 'Tailwind: Flexbox utilities', code: 'className="flex items-center\n  justify-between gap-2"' },
-      { title: 'JavaScript: Remove duplicates', code: 'const unique = [...new Set(array)];' },
+    const FALLBACK_TIPS = [
+      {
+        title: "Python: Dict default value",
+        code: "value = data.get('key', default)"
+      },
+      {
+        title: "FastAPI: Query validation",
+        code: "q: str = Query(..., min_length=3)"
+      },
+      {
+        title: "Django: Atomic transaction",
+        code: "with transaction.atomic():\n  save_data()"
+      }
     ];
-    const fallback = fallbackTips[Math.floor(Math.random() * fallbackTips.length)];
+    const fallback = FALLBACK_TIPS[Math.floor(Math.random() * FALLBACK_TIPS.length)];
     return NextResponse.json({
       title: fallback.title,
       code: fallback.code,
@@ -109,16 +121,21 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Tip API error:', error);
     // Fallback tips
-    const fallbackTips = [
-      { title: 'TypeScript: Safe async fetch', code: 'const { data, error } = await fetch(url)\n  .then(r => r.json())\n  .catch(e => ({ error: e }));' },
-      { title: 'Tailwind: Flexbox utilities', code: 'className="flex items-center\n  justify-between gap-2"' },
-      { title: 'JavaScript: Remove duplicates', code: 'const unique = [...new Set(array)];' },
-      { title: 'Python: List comprehension', code: 'data = [x*2 for x in range(10)]' },
-      { title: 'Docker: Lightweight base image', code: 'FROM node:18-alpine\nWORKDIR /app' },
-      { title: 'MongoDB: Query filter', code: 'db.collection.find(\n  { status: "active" }\n)' },
-      { title: 'React: State hook', code: 'const [state, setState] =\n  useState(initial);' },
+    const FALLBACK_TIPS = [
+      {
+        title: "Python: Dict default value",
+        code: "value = data.get('key', default)"
+      },
+      {
+        title: "FastAPI: Query validation",
+        code: "q: str = Query(..., min_length=3)"
+      },
+      {
+        title: "Django: Atomic transaction",
+        code: "with transaction.atomic():\n  save_data()"
+      }
     ];
-    const fallback = fallbackTips[Math.floor(Math.random() * fallbackTips.length)];
+    const fallback = FALLBACK_TIPS[Math.floor(Math.random() * FALLBACK_TIPS.length)];
     return NextResponse.json({
       title: fallback.title,
       code: fallback.code,
